@@ -1,0 +1,18 @@
+import os
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
+DB_USER = os.getenv("DB_USER")
+DB_PASSWORD = os.getenv("DB_PASSWORD")
+DB_HOST = os.getenv("DB_HOST")   # RDS endpoint
+DB_NAME = os.getenv("DB_NAME")
+
+DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}"
+
+engine = create_engine(
+    DATABASE_URL,
+    pool_size=5,
+    max_overflow=10
+)
+
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
