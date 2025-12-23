@@ -1,27 +1,19 @@
-variable "vpc_id" {
-  type = string
+variable "vpc_cidr" {
+    type = string
+    default = "10.0.0.0/16"
 }
 
-variable "public_subnet_1_cidr" {
-  type = string
+variable "public_subnets_cidr" {
+    type = list(string)
+    default = ["10.0.1.0/24", "10.0.2.0/24"]
 }
 
-variable "public_subnet_2_cidr" {
-  type = string
+variable "private_subnets_cidr" {
+    type = list(string)
+    default = ["10.1.1.0/24", "10.1.2.0/24"]
 }
 
-variable "private_subnet_1_cidr" {
-  type = string
-}
-
-variable "private_subnet_2_cidr" {
-  type = string
-}
-
-variable "az_1" {
-  type = string
-}
-
-variable "az_2" {
-  type = string
+variable "availability_zones" {
+    type = list(string)
+    default = ["ap-southeast-1a", "ap-southeast-1b"]
 }
