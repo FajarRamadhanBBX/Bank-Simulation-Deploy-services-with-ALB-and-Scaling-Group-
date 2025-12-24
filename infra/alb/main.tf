@@ -12,11 +12,11 @@ resource "aws_lb_target_group" "app_tg" {
 
     health_check {
         path = "/ping"
-        healthy_threshold = 2
-        unhealthy_threshold = 2
-        timeout = 5
-        interval = 30
-        matcher = "200"
+        healthy_threshold = 2 # jumlah respon sehat berturut-turut
+        unhealthy_threshold = 2 # jumlah respon tidak sehat berturut-turut
+        timeout = 5 # waktu tunggu respon
+        interval = 30 # frekuensi pengecekan
+        matcher = "200" # kode status HTTP yang dianggap sehat
     }
 }
 
