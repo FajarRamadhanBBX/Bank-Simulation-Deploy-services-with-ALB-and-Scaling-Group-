@@ -1,14 +1,15 @@
 variable "vpc_id" {
-    type = string
-    default = output.vpc_id
+  type = string
 }
 
 variable "alb_sg_id" {
-    type = string
-    default = output.alb_sg_id
+  type = string
 }
 
 variable "public_subnet_ids" {
-    type = list(string)
-    default = output.public_subnet_ids
+  type = list(string)
+}
+
+variable "eip_allocation_ids" {
+  type = list(string)
 }
