@@ -6,4 +6,5 @@ app/__pycache__
 *.tfstate.backup
 .terraform/
 
+infra/terraform.tfvars
 infra/.terraform.lock.hcl
