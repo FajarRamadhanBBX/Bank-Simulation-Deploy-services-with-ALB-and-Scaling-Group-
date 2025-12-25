@@ -4,14 +4,18 @@ resource "aws_launch_template" "app_lt" {
   image_id = "ami-00d8fc944fb171e29"
   vpc_security_group_ids = [ var.app_sg_id ]
 
-  user_data = base64encode(<<-EOF
-    #!/bin/bash
-    yum update -y
-    yum install -y httpd
-    systemctl start httpd
-    systemctl enable httpd
-    echo "Hello from ASG $(hostname)" > /var/www/html/index.html
-    EOF
+  iam_instance_profile {
+    name = var.ec2_instance_profile_name
+  }
+
+  user_data = base64encode(
+    templatefile("${path.module}/user_data.sh", {
+      ecr_url = var.ecr_url
+      db_host = var.db_host
+      db_user = var.db_user
+      db_password = var.db_password
+      db_name = var.db_name
+    })
   )
 }
 
