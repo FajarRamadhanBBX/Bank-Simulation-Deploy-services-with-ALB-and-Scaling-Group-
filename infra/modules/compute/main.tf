@@ -31,6 +31,20 @@ resource "aws_autoscaling_group" "app_asg" {
   }
 }
 
+resource "aws_autoscaling_policy" "cpu_target_tracking" {
+  name = "cpu-target-tracking-policy"
+  policy_type = "TargetTrackingScaling"
+  autoscaling_group_name = aws_autoscaling_group.app_asg.name
+
+  target_tracking_configuration {
+    predefined_metric_specification {
+      predefined_metric_type = "ASGAverageCPUUtilization"
+    }
+
+    target_value = 60
+  }
+}
+
 # resource "aws_instance" "app_server" {
 #   count         = length(var.private_subnet_ids)
 #   ami           = "ami-00d8fc944fb171e29"
