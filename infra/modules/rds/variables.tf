@@ -1,19 +1,23 @@
+variable "vpc_id" {
+  type = string
+}
+
 variable "private_subnet_ids" {
-    type = list(string)
-    default = [output.private_subnet_ids[*].id]
+  type    = list(string)
 }
 
 variable "db_sg_id" {
-    type = string
-    default = output.db_sg_id.id
+  type    = string
 }
 
-variable "username" {
-    type = string
-    default = var.db_username
+variable "db_name" {
+  type    = string
 }
 
-variable "password" {
-    type = string
-    default = var.db_password
+variable "db_username" {
+  type    = string
+}
+
+variable "db_password" {
+  type    = string
 }

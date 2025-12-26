@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, HTTPException
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 import time
@@ -22,9 +22,20 @@ def get_db():
     finally:
         db.close()
 
+@app.get("/ping")
+def ping():
+    return {"status": "ok", "code": 200}
+
 @app.get("/health")
-def health():
-    return {"status": "ok"}
+def health_check():
+    # Cek koneksi
+    db_status = check_database_connection() 
+    
+    if db_status:
+        return {"status": "ready", "db": "connected"}
+    else:
+        # Return 503 agar Load Balancer tahu server ini jangan diberikan trafik dulu
+        raise HTTPException(status_code=503, detail="Database connection failed")
 
 @app.get("/balance")
 def get_balance(account_number: str, db: Session = Depends(get_db)):

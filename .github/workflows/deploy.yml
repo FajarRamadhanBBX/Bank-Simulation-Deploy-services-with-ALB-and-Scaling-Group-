@@ -1,0 +1,38 @@
+name: Build & Deploy
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ap-southeast-1
+          role-to-assume: arn:aws:iam::233720365697:role/github-ecr-deploy-role
+
+      - uses: aws-actions/amazon-ecr-login@v2
+
+      - run: docker build -t banking-app .
+
+      - run: |
+          ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+          ECR="$ACCOUNT_ID.dkr.ecr.ap-southeast-1.amazonaws.com/banking-app"
+          docker tag banking-app:latest $ECR:latest
+          docker push $ECR:latest
+
+      - name: Trigger Instance Refresh
+        run: |
+          aws autoscaling start-instance-refresh \
+            --auto-scaling-group-name app-asg \
+            --preferences MinHealthyPercentage=50 \
+            --region ap-southeast-1
