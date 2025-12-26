@@ -2,6 +2,18 @@ module "vpc" {
   source = "./modules/vpc"
 }
 
+module "iam" {
+  source = "./modules/iam"
+}
+
+module "alb" {
+  source = "./modules/alb"
+  vpc_id = module.vpc.vpc_id
+  public_subnet_ids = module.vpc.public_subnet_ids
+  eip_allocation_ids = module.vpc.eip_allocation_ids
+  alb_sg_id = module.security_group.alb_sg_id
+}
+
 module "ecr" {
   source = "./modules/ecr"
 }
