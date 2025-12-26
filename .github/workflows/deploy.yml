@@ -26,7 +26,7 @@ jobs:
 
       - run: |
           ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
-          ECR="$ACCOUNT_ID.dkr.ecr.ap-southeast-1.amazonaws.com/banking-app"
+          ECR="$ACCOUNT_ID.dkr.ecr.ap-southeast-1.amazonaws.com/banking-app-repo"
           docker tag banking-app:latest $ECR:latest
           docker push $ECR:latest
 
