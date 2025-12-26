@@ -46,6 +46,30 @@ resource "aws_iam_role" "github_role" {
         }
       }
     }]
+  }) 
+}
+
+resource "aws_iam_role_policy_attachment" "gha_ecr" {
+  role = aws_iam_role.github_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryPowerUser" 
+}
+
+resource "aws_iam_policy" "asg_refresh" {
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Effect   = "Allow",
+      Action   = [
+        "autoscaling:StartInstanceRefresh",
+        "autoscaling:DescribeInstanceRefreshes",
+        "autoscaling:DescribeAutoScalingGroups"
+      ],
+      Resource = "*"
+    }]
   })
-  
+}
+
+resource "aws_iam_role_policy_attachment" "gha_asg" {
+  role       = aws_iam_role.github_role.name
+  policy_arn = aws_iam_policy.asg_refresh.arn
 }
