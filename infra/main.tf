@@ -2,7 +2,7 @@ module "vpc" {
   source = "./modules/vpc"
 }
 
-module "ecr_url" {
+module "ecr" {
   source = "./modules/ecr"
 }
 
@@ -32,7 +32,7 @@ module "alb" {
 module "compute" {
   source = "./modules/compute"
   ec2_instance_profile_name = module.iam.ec2_instance_profile_name
-  ecr_url = module.ecr_url.ecr_url
+  ecr_url = module.ecr.ecr_url
   db_host = module.rds.db_address
   db_user = var.db_user
   db_password = var.db_password

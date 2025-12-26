@@ -1,11 +1,3 @@
-variable "ecr_url" {
-  type = string
-}
-
-variable "db_host" {
-  type = string
-}
-
 variable "db_user" {
   type = string
 }
