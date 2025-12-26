@@ -2,6 +2,10 @@ output "db_endpoint" {
   value = aws_db_instance.rds.endpoint
 }
 
+output "db_address" {
+  value = aws_db_instance.rds.address
+}
+
 output "port" {
   value = aws_db_instance.rds.port
 }

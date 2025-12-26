@@ -15,7 +15,7 @@ resource "aws_db_instance" "rds" {
   engine         = "postgres"
   engine_version = "17.6"
 
-  db_name = "bankdb"
+  db_name = var.db_name
   username = var.db_username
   password = var.db_password
 

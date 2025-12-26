@@ -6,13 +6,13 @@ systemctl enable docker
 usermod -aG docker ubuntu
 
 aws ecr get-login-password --region ap-southeast-1 \
- | docker login --username AWS --password-stdin ${ECR_URL}
+ | docker login --username AWS --password-stdin ${ecr_url}
 
-docker pull ${ECR_URL}:latest
+docker pull ${ecr_url}:latest
 
 docker run -d -p 80:8000 \
-  -e DB_HOST=${DB_HOST} \
-  -e DB_USER=${DB_USER} \
-  -e DB_PASSWORD=${DB_PASSWORD} \
-  -e DB_NAME=${DB_NAME} \
-  ${ECR_URL}:latest
+  -e DB_HOST=${db_host} \
+  -e DB_USER=${db_user} \
+  -e DB_PASSWORD=${db_password} \
+  -e DB_NAME=${db_name} \
+  ${ecr_url}:latest
