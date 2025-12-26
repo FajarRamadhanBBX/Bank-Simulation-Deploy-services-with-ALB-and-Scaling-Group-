@@ -22,7 +22,7 @@ jobs:
 
       - uses: aws-actions/amazon-ecr-login@v2
 
-      - run: docker build -t banking-app .
+      - run: docker build -t banking-app ./app
 
       - run: |
           ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
