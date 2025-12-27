@@ -7,6 +7,8 @@ from sqlalchemy import text
 from database import SessionLocal, engine
 from models import Base, Account, Transaction
 
+import time
+
 app = FastAPI(title="Banking API with RDS")
 
 class TransferRequest(BaseModel):
@@ -38,7 +40,6 @@ def check_database_connection():
 def ping():
     return {"status": "ok"}
 
-
 @app.get("/health")
 def health_check():
     if check_database_connection():
@@ -46,6 +47,13 @@ def health_check():
     else:
         raise HTTPException(status_code=503, detail="DB not ready")
 
+@app.post("/account")
+def create_account(account_number: str, initial_balance: float, db: Session = Depends(get_db)):
+    account = Account(account_number=account_number, balance=initial_balance)
+    db.add(account)
+    db.commit()
+    db.refresh(account)
+    return account
 
 @app.get("/balance")
 def get_balance(account_number: str, db: Session = Depends(get_db)):
@@ -54,6 +62,16 @@ def get_balance(account_number: str, db: Session = Depends(get_db)):
         return {"error": "Account not found"}
 
     return {"account": account.account_number, "balance": account.balance}
+
+@app.post("/add_funds")
+def add_funds(account_number: str, amount: float, db: Session = Depends(get_db)):
+    account = db.query(Account).filter_by(account_number=account_number).first()
+    if not account:
+        return {"error": "Account not found"}
+
+    account.balance += amount
+    db.commit()
+    return {"account": account.account_number, "new_balance": account.balance}
 
 @app.post("/transfer")
 def transfer(data: TransferRequest, db: Session = Depends(get_db)):
@@ -85,3 +103,17 @@ def transfer(data: TransferRequest, db: Session = Depends(get_db)):
         "status": "SUCCESS",
         "amount": data.amount
     }
+
+@app.get("/get_all_data")
+def get_all_data(db: Session = Depends(get_db)):
+    accounts = db.query(Account).all()
+    transactions = db.query(Transaction).all()
+    return {
+        "accounts": accounts,
+        "transactions": transactions
+    }
+
+@app.get("/get_all_accounts")
+def get_all_accounts(db: Session = Depends(get_db)):
+    accounts = db.query(Account).all()
+    return {"accounts": accounts}
