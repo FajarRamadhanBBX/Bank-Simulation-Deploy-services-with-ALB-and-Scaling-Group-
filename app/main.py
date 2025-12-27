@@ -11,19 +11,12 @@ import time
 
 app = FastAPI(title="Banking API with RDS")
 
-class TransferRequest(BaseModel):
-    from_account: str
-    to_account: str
-    amount: float
-
-
 def get_db():
     db = SessionLocal()
     try:
         yield db
     finally:
         db.close()
-
 
 def check_database_connection():
     try:
@@ -34,7 +27,6 @@ def check_database_connection():
         return False
     finally:
         db.close()
-
 
 @app.get("/ping")
 def ping():
@@ -48,28 +40,26 @@ def health_check():
         raise HTTPException(status_code=503, detail="DB not ready")
 
 @app.post("/account")
-def create_account(account_number: str, initial_balance: float, db: Session = Depends(get_db)):
-    account = Account(account_number=account_number, balance=initial_balance)
+def create_account(data: AccountRequest, db: Session = Depends(get_db)):
+    account = Account(account_number=data.account_number, balance=data.initial_balance)
     db.add(account)
     db.commit()
     db.refresh(account)
     return account
 
-@app.get("/balance")
-def get_balance(account_number: str, db: Session = Depends(get_db)):
-    account = db.query(Account).filter_by(account_number=account_number).first()
+@app.post("/balance")
+def get_balance(data: BalanceRequest, db: Session = Depends(get_db)):
+    account = db.query(Account).filter_by(account_number=data.account_number).first()
     if not account:
         return {"error": "Account not found"}
-
     return {"account": account.account_number, "balance": account.balance}
 
 @app.post("/add_balance")
-def add_funds(account_number: str, amount: float, db: Session = Depends(get_db)):
-    account = db.query(Account).filter_by(account_number=account_number).first()
+def add_funds(data: AddBalanceRequest, db: Session = Depends(get_db)):
+    account = db.query(Account).filter_by(account_number=data.account_number).first()
     if not account:
         return {"error": "Account not found"}
-
-    account.balance += amount
+    account.balance += data.amount
     db.commit()
     return {"account": account.account_number, "new_balance": account.balance}
 
@@ -77,28 +67,20 @@ def add_funds(account_number: str, amount: float, db: Session = Depends(get_db))
 def transfer(data: TransferRequest, db: Session = Depends(get_db)):
     from_acc = db.query(Account).filter_by(account_number=data.from_account).first()
     to_acc = db.query(Account).filter_by(account_number=data.to_account).first()
-
     if not from_acc or not to_acc:
         return {"error": "Invalid account"}
-
     if from_acc.balance < data.amount:
         return {"error": "Insufficient balance"}
-
-    # Simulasi proses bank (latency)
     time.sleep(0.2)
-
     from_acc.balance -= data.amount
     to_acc.balance += data.amount
-
     tx = Transaction(
         from_account=data.from_account,
         to_account=data.to_account,
         amount=data.amount
     )
-
     db.add(tx)
     db.commit()
-
     return {
         "status": "SUCCESS",
         "amount": data.amount
@@ -117,3 +99,8 @@ def get_all_data(db: Session = Depends(get_db)):
 def get_all_accounts(db: Session = Depends(get_db)):
     accounts = db.query(Account).all()
     return {"accounts": accounts}
+
+@app.get("/get_all_transactions")
+def get_all_transactions(db: Session = Depends(get_db)):
+    transactions = db.query(Transaction).all()
+    return {"transactions": transactions}
