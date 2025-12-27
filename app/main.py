@@ -63,7 +63,7 @@ def get_balance(account_number: str, db: Session = Depends(get_db)):
 
     return {"account": account.account_number, "balance": account.balance}
 
-@app.post("/add_funds")
+@app.post("/add_balance")
 def add_funds(account_number: str, amount: float, db: Session = Depends(get_db)):
     account = db.query(Account).filter_by(account_number=account_number).first()
     if not account:
