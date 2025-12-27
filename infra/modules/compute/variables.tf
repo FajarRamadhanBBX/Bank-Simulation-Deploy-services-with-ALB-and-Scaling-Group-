@@ -14,10 +14,6 @@ variable "ec2_instance_profile_name" {
   type = string
 }
 
-variable "ecr_url" {
-  type = string
-}
-
 variable "db_host" {
   type = string
 }
