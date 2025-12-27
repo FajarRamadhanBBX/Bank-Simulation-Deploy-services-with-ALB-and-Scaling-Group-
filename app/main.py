@@ -28,14 +28,14 @@ def ping():
 
 @app.get("/health")
 def health_check():
-    # Cek koneksi
-    db_status = check_database_connection() 
-    
-    if db_status:
-        return {"status": "ready", "db": "connected"}
-    else:
-        # Return 503 agar Load Balancer tahu server ini jangan diberikan trafik dulu
-        raise HTTPException(status_code=503, detail="Database connection failed")
+    try:
+        if check_database_connection():
+            return {"status": "ready", "db": "connected"}
+        else:
+            raise HTTPException(status_code=503, detail="DB not ready")
+    except Exception as e:
+        raise HTTPException(status_code=503, detail=str(e))
+
 
 @app.get("/balance")
 def get_balance(account_number: str, db: Session = Depends(get_db)):
