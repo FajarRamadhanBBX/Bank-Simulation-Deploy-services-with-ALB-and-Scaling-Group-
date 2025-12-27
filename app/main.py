@@ -16,6 +16,12 @@ class TransferRequest(BaseModel):
     to_account: str
     amount: float
 
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 def check_database_connection():
     try:
