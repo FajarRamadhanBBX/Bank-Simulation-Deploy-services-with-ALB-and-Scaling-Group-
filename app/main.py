@@ -2,12 +2,10 @@ from fastapi import FastAPI, Depends, HTTPException
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import OperationalError
-import time
+from sqlalchemy import text
 
 from database import SessionLocal, engine
 from models import Base, Account, Transaction
-
-Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="Banking API with RDS")
 
@@ -16,6 +14,7 @@ class TransferRequest(BaseModel):
     to_account: str
     amount: float
 
+
 def get_db():
     db = SessionLocal()
     try:
@@ -23,30 +22,29 @@ def get_db():
     finally:
         db.close()
 
+
 def check_database_connection():
     try:
         db = SessionLocal()
-        db.execute("SELECT 1")
-        db.close()
+        db.execute(text("SELECT 1"))
         return True
-    except OperationalError:
-        return False
     except Exception:
         return False
+    finally:
+        db.close()
+
 
 @app.get("/ping")
 def ping():
-    return {"status": "ok", "code": 200}
+    return {"status": "ok"}
+
 
 @app.get("/health")
 def health_check():
-    try:
-        if check_database_connection():
-            return {"status": "ready", "db": "connected"}
-        else:
-            raise HTTPException(status_code=503, detail="DB not ready")
-    except Exception as e:
-        raise HTTPException(status_code=503, detail=str(e))
+    if check_database_connection():
+        return {"status": "ready", "db": "connected"}
+    else:
+        raise HTTPException(status_code=503, detail="DB not ready")
 
 
 @app.get("/balance")
@@ -55,10 +53,7 @@ def get_balance(account_number: str, db: Session = Depends(get_db)):
     if not account:
         return {"error": "Account not found"}
 
-    return {
-        "account": account.account_number,
-        "balance": account.balance
-    }
+    return {"account": account.account_number, "balance": account.balance}
 
 @app.post("/transfer")
 def transfer(data: TransferRequest, db: Session = Depends(get_db)):
