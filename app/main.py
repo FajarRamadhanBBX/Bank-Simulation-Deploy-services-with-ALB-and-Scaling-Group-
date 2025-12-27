@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Depends, HTTPException
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import OperationalError
 import time
 
 from database import SessionLocal, engine
@@ -15,12 +16,17 @@ class TransferRequest(BaseModel):
     to_account: str
     amount: float
 
-def get_db():
-    db = SessionLocal()
+
+def check_database_connection():
     try:
-        yield db
-    finally:
+        db = SessionLocal()
+        db.execute("SELECT 1")
         db.close()
+        return True
+    except OperationalError:
+        return False
+    except Exception:
+        return False
 
 @app.get("/ping")
 def ping():
