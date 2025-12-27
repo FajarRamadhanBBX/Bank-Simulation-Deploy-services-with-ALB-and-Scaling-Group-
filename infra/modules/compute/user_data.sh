@@ -43,7 +43,7 @@ rm -rf awscliv2.zip aws/
 # -----------------------
 ACCOUNT_ID=$(aws sts get-caller-identity --query "Account" --output text)
 REGION=ap-southeast-1
-REPO=banking-app
+REPO=banking-app-repo
 
 aws ecr get-login-password --region $REGION \
   | docker login \
