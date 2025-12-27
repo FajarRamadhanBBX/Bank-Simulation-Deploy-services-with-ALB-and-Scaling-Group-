@@ -6,7 +6,7 @@ from sqlalchemy import text
 
 from database import SessionLocal, engine
 from models import Base, Account, Transaction
-from schemas import AccountRequest, BalanceRequest, AddBalanceRequest, TransferRequest
+from schemas import (AccountRequest, BalanceRequest, AddBalanceRequest, TransferRequest)
 
 import time
 
