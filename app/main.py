@@ -6,9 +6,24 @@ from sqlalchemy import text
 
 from database import SessionLocal, engine
 from models import Base, Account, Transaction
-from schemas import (AccountRequest, BalanceRequest, AddBalanceRequest, TransferRequest)
 
 import time
+
+class AccountRequest(BaseModel):
+    account_number: str
+    initial_balance: float
+
+class AddBalanceRequest(BaseModel):
+    account_number: str
+    amount: float
+
+class BalanceRequest(BaseModel):
+    account_number: str
+
+class TransferRequest(BaseModel):
+    from_account: str
+    to_account: str
+    amount: float
 
 app = FastAPI(title="Banking API with RDS")
 
