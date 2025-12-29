@@ -1,4 +1,5 @@
 # Simple Banking System on AWS (High Availability Architecture)
+<img width="3896" height="3208" alt="image" src="https://github.com/user-attachments/assets/e1678fe0-4364-49e6-81ec-f7ee574e6988" />
 
 Proyek ini menyimulasikan sistem perbankan sederhana yang berjalan di atas arsitektur AWS yang **High Availability**.  
 Aplikasi backend dikemas sebagai Docker container, disimpan di **Amazon ECR**, dan dijalankan pada **instance EC2 di dalam Auto Scaling Group**.
@@ -112,3 +113,4 @@ Security group dibagi menjadi:
 - Implementasi Canary deployments
 - Blue-Green deployment strategy
 - Auto-rollback mechanism
+
